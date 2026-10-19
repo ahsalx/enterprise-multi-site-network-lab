@@ -14,28 +14,27 @@ The design was inspired by a real enterprise topology that an experienced networ
 
 The network is split into three sites: **HQ, Branch 1, and Branch 2**. A router named `PE_MPLS` represents the provider network and connects the three sites.
 
-Both branches follow the same basic design: one Layer 3 switch handles the local VLAN gateways and inter-VLAN routing, while two routers provide separate paths toward the provider. I used two WAN routers because allowing the branch to keep a redundant possible path if one router or one provider-facing link is lost.
+Both branches follow the same basic design: one Layer 3 switch handles the local VLAN gateways and inter-VLAN routing, while two routers provide separate paths toward the provider. I used two WAN routers so the branch can keep an alternate path if one router or one provider-facing link fails.
 
 HQ is designed differently because it is the main security and management site. It has two switches connected with an LACP EtherChannel and two FortiGates running as an active/passive HA pair.
 
-For the provider-facing side of HQ, I chose to place a shared transit switch between the FortiGate pair and `PE_MPLS`. The alternative would have been to give each FortiGate its own dedicated provider-facing connection. Using the shared switch keeps the design simpler and reduces the number of links and interfaces needed, which is closer to the kind of cost trade-off that can exist in a real network.
+For the provider-facing side of HQ, I chose to place a shared transit switch between the FortiGate pair and `PE_MPLS`. The alternative would have been to give each FortiGate its own dedicated provider-facing connection. Using the shared switch keeps the design simpler and reduces the number of links and interfaces needed. The trade-off is that the shared transit switch remains a single point of failure.
 
 Security follows the actual traffic path. Traffic going to or from HQ crosses the FortiGate, so the firewall is the main policy point for HQ. Branch-to-branch traffic can stay inside the provider path and never reach the FortiGate, so the branch Layer 3 switches also use ACLs to protect sensitive networks such as CCTV.
 
-For example, traffic from a Branch 1 Staff PC to an HQ Staff follows this path:
+For example, traffic from a Branch 1 Staff PC to an HQ Staff host follows this path:
 
 ```text
 Branch endpoint → Branch L3 switch → R1 or R2 → PE_MPLS → HQ transit switch → FortiGate HA pair → HQ VLAN
 ```
 
-Traffic to the outside, for example, if Staff in Branch 1 want to reach the Internet, the traffic will have to pass through FortiGate first.
-this step and the firewall poilcy isnt configured yet but its upgradble and future real internet connection is in the way
+Internet access is not configured in the current lab. The intended design is for Internet-bound branch traffic to pass through HQ and the FortiGate, and this can be added later.
 
 ---
 
 ## 2. VLAN and IP Plan
 
-I kept the VLAN roles the same at every site so the design is easy to read:
+I kept VLANs 10, 20, and 30 consistent across all sites. VLAN 99 is used at HQ for Administration/Management:
 
 | VLAN | Role |
 |---:|---|
@@ -253,7 +252,7 @@ I only use it on access-facing ports. Trunks, routed uplinks, and EtherChannel m
 
 ---
 
-## 11. Troubleshooting Highlights
+## 10. Troubleshooting Highlights
 
 ### EtherChannel would not bundle
 
