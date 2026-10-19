@@ -89,6 +89,8 @@ The name represents the provider role in the topology; this lab does **not** imp
 
 I used **OSPF Area 0** for dynamic routing. OSPF was the routing protocol I knew from my CCNA studies, and it fit what I needed here.
 
+![Branch 2 OSPF configuration](screenshots/16-branch2-ospf-configuration.png)
+
 On the HQ side, the FortiGate forms an OSPF adjacency with `10.0.3.2` and advertises the HQ networks.
 
 ![FortiGate OSPF](screenshots/04-fortigate-ospf-neighbor.png)
@@ -227,6 +229,8 @@ At HQ, DHCP is provided by the FortiGate for the Staff, CCTV, and Printer VLANs:
 ![FortiGate DHCP leases](screenshots/13-dhcp-leases-hq.png)
 
 At the branches, the Layer 3 switches provide DHCP locally for their VLANs.
+
+![Branch 1 DHCP server and binding](screenshots/17-branch1-dhcp-server.png)
 
 A VPCS client successfully received an IP address and default gateway through DHCP:
 
