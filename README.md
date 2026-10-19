@@ -2,7 +2,7 @@
 
 A multi-site enterprise network built in **PNETLab** using Cisco IOS and FortiGate. The lab connects an HQ and two branches through a routed provider network, with separate networks for Staff, CCTV, Printers, and Management.
 
-The design was inspired by a real enterprise topology that an experienced network engineer in Lisbon walked me through and reviewed with me while I was building the lab. I adapted the idea to the technologies I had already studied during CCNA and could configure and troubleshoot myself.
+The design was inspired by a real enterprise topology that an experienced network engineer in Lisbon walked me through and reviewed with me while I was building the lab. I adapted the idea to the technologies I had already studied during my CCNA and could configure and troubleshoot myself.
 
 **Core technologies:** VLANs · Layer 3 switching · OSPF · FortiGate HA · Firewall Policies · Extended ACLs · LACP/EtherChannel · DHCP · SSH · Port Security
 
@@ -28,7 +28,7 @@ For example, traffic from a Branch 1 Staff PC to an HQ Staff host follows this p
 Branch endpoint → Branch L3 switch → R1 or R2 → PE_MPLS → HQ transit switch → FortiGate HA pair → HQ VLAN
 ```
 
-Internet access is not configured in the current lab. The intended design is for Internet-bound branch traffic to pass through HQ and the FortiGate, and this can be added later.
+Internet access is not yet configured in the current lab. The intended design is for Internet-bound branch traffic to pass through HQ and the FortiGate, and this can be added later.
 
 ---
 
@@ -77,7 +77,7 @@ The point-to-point routed links use `/30` networks because only two usable addre
 
 `PE_MPLS` acts as the central provider/transit router between HQ and both branches.
 
-The name represents the provider role in the topology; this lab does **not** implement MPLS label switching, LDP, or MPLS VPNs. The provider side is IP routing with OSPF.
+The name represents the provider role in the topology; this lab does **not** implement real MPLS label switching, LDP, or MPLS VPNs. The provider side is IP routing with OSPF.
 
 | Link | PE Interface | Address |
 |---|---|---|
@@ -107,7 +107,7 @@ The HQ uses two FortiGate VMs in an **active/passive HA pair**. `port4` is used 
 
 ![FortiGate HA cluster](screenshots/03-fortigate-ha-cluster.png)
 
-The cluster reached a synchronized Primary/Secondary state. HA removes the individual firewall as a single point of failure, although the shared HQ transit switch described earlier is still common to both firewalls.
+The cluster reached a synchronized Primary/Secondary state. HA removes the individual firewall as a single point of failure.
 
 ### Address objects and groups
 
@@ -134,7 +134,7 @@ Objects with the same role are grouped together, for example `ALL-STAFF`.
 
 ![ALL-STAFF address group](screenshots/07-fortigate-all-staff-group.png)
 
-That keeps the firewall rules readable. A rule using `ALL-STAFF` is easier to understand later than a rule containing several unrelated-looking subnets.
+That keeps the firewall rules readable.
 
 ### Firewall policy
 
@@ -163,15 +163,15 @@ For that reason, I used extended ACLs on the branch Layer 3 switches to control 
 
 ![Extended ACL configuration](screenshots/10-extended-acl-icmp.png)
 
-I used an extended ACL because I needed to match both the **source** and the **destination** instead of filtering only by source network.
+An extended ACL was used to match both the **source** and the **destination**.
 
 The ACL was tested from a VPCS host:
 
 ![ACL block verification](screenshots/11-acl-block-test.png)
 
-The `administratively prohibited` response was useful during testing because it showed that the packet reached the routing device and was intentionally rejected by the ACL, instead of simply disappearing because of a routing problem.
+The `administratively prohibited` response was proof that the packet reached the routing device and was intentionally rejected by the ACL.
 
-At HQ, I did not duplicate the same ACL design because the FortiGate already sits between the relevant networks and handles that policy there.
+At HQ, I did not duplicate the same ACL design because the FortiGate already sits between the relevant networks and handles it with its implicit deny firewall policy.
 
 ---
 
@@ -198,7 +198,7 @@ I used EtherChannel for two reasons: it gives the switches more than one physica
 
 ## 7. Management and SSH
 
-I wanted the infrastructure to be managed through dedicated management addresses instead of randomly connecting to whichever routed interface was easiest to reach.
+The infrastructure is managed through dedicated management addresses.
 
 Branch routers and switches use loopback addresses as stable SSH targets. At HQ, management is separated through VLAN 99.
 
@@ -232,7 +232,7 @@ At the branches, the Layer 3 switches provide DHCP locally for their VLANs.
 
 ![Branch 1 DHCP server and binding](screenshots/17-branch1-dhcp-server.png)
 
-A VPCS client successfully received an IP address and default gateway through DHCP:
+A VPCS Staff client successfully received an IP address and default gateway through DHCP:
 
 ![VPCS DHCP DORA](screenshots/14-dhcp-dora-vpcs.png)
 
@@ -240,9 +240,7 @@ A VPCS client successfully received an IP address and default gateway through DH
 
 ## 9. Layer-2 Access Security
 
-Port Security is enabled on endpoint-facing switchports.
-
-The reason is practical: if someone disconnects a known endpoint and connects another device to the same access port, I do not want the switch to automatically accept a different MAC address.
+Port Security is enabled on endpoint-facing switchports, preventing someone from disconnecting a known endpoint and connecting another device to the same access port.
 
 ```cisco
 switchport port-security
@@ -251,8 +249,6 @@ switchport port-security violation shutdown
 ```
 
 ![Switchport Port Security](screenshots/12-switchport-port-security.png)
-
-I only use it on access-facing ports. Trunks, routed uplinks, and EtherChannel members are left out because multiple MAC addresses can legitimately appear there.
 
 ---
 
@@ -276,6 +272,4 @@ I only use it on access-facing ports. Trunks, routed uplinks, and EtherChannel m
 
 ### FortiGate replied to ping but the GUI did not open over HTTPS
 
-The network path was working because the firewall replied to ICMP, but that did not mean the HTTPS management service was working correctly. With this FortiGate image, I used HTTP management as a lab workaround.
-
-> HTTP was only used as a workaround inside the lab. It is not how I would expose firewall management in a production network.
+The network path was working because the firewall replied to ICMP, but the HTTPS management service wasn't working correctly. With this FortiGate image, I used HTTP management as a workaround.
