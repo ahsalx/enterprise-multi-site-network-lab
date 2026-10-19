@@ -178,6 +178,8 @@ At HQ, I did not duplicate the same ACL design because the FortiGate already sit
 
 `HqSwitch4` and `HqSwitch5` are connected using a two-link **LACP EtherChannel**.
 
+![HQ EtherChannel links](screenshots/15-hq-etherchannel-links.png)
+
 The Port-Channel carries VLANs `10,20,30,99`:
 
 ```cisco
