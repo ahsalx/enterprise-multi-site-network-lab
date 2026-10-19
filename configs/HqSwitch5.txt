@@ -1,0 +1,233 @@
+
+!
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname HqSwitch5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+username admin secret <REDACTED>
+no aaa new-model
+!
+ip cef
+ip dhcp excluded-address 192.168.220.0 192.168.220.10
+!
+!
+ip domain-name lab.lab
+no ipv6 cef
+ipv6 multicast rpf use-bgp
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+vlan internal allocation policy ascending
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ no shutdown
+ switchport
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 10,20,30,99
+ switchport mode trunk
+!
+interface Ethernet0/0
+ no shutdown
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 10,20,30,99
+ switchport mode trunk
+ duplex auto
+!
+interface Ethernet0/1
+ no shutdown
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ duplex auto
+!
+interface Ethernet0/2
+ no shutdown
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ duplex auto
+!
+interface Ethernet0/3
+ no shutdown
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ duplex auto
+!
+interface Ethernet1/0
+ no shutdown
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 10,20,30,99
+ switchport mode trunk
+ duplex auto
+!
+interface Ethernet1/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet1/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet1/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet2/0
+ no shutdown
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 10,20,30,99
+ switchport mode trunk
+ duplex auto
+ channel-group 1 mode active
+!
+interface Ethernet2/1
+ no shutdown
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 10,20,30,99
+ switchport mode trunk
+ duplex auto
+ channel-group 1 mode active
+!
+interface Ethernet2/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet2/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet3/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet4/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet5/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet6/3
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/0
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/1
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/2
+ no shutdown
+ duplex auto
+!
+interface Ethernet7/3
+ no shutdown
+ duplex auto
+!
+interface Vlan99
+ no shutdown
+ ip address 192.168.99.5 255.255.255.240
+!
+ip default-gateway 192.168.99.1
+!
+no ip http server
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+end
