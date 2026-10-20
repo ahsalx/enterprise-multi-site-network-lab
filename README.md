@@ -1,4 +1,4 @@
-# Multi-Site Enterprise Network Lab — PNETLab
+# Multi-Site Enterprise Network Lab PNETLab
 
 A multi-site enterprise network built in **PNETLab** using Cisco IOS and FortiGate. The lab connects an HQ and two branches through a routed provider network, with separate networks for Staff, CCTV, Printers, and Management.
 
